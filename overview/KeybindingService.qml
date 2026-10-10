@@ -143,8 +143,13 @@ Item {
         commands.push(`_G.manateeWindowSwitcherBindingOwner = "${ownerToken}"`);
         // Native mode does not own Win+number. Never unbind or recreate those
         // keys there; they may be user-defined rather than Omarchy defaults.
+        // Legacy mode does own them, but binds them like native mode instead
+        // of slot shortcuts: slots only reach workspaces that already have
+        // windows, so Super+1..0 cannot reach an empty workspace (e.g. the
+        // freshly created one) while a window-switcher-style slot ring sits
+        // on those keys.
         return optimized
-            ? commands.concat(root.workspaceNumberCommands(true)).join("; ")
+            ? commands.concat(root.workspaceNumberCommands(false)).join("; ")
             : commands.join("; ");
     }
 
