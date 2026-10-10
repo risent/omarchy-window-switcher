@@ -840,6 +840,17 @@ Item {
     watchdog.restart()
   }
 
+  function showOrCycle() {
+    if (root.opened)
+      root.cycle(1)
+    else if (root.activationCommitInProgress)
+      return
+    else if (root.snapshotPending)
+      root.queuedSteps += 1
+    else
+      root.startSwitcher(false, "", 1, "global")
+  }
+
   function invokeShortcut(step, inputSource) {
     const source = inputSource || "global"
     root.traceInput(source + "-step", step)
@@ -1483,6 +1494,14 @@ Item {
     description: "Configure Orbit window modes"
 
     onPressed: root.openSettings()
+  }
+
+  GlobalShortcut {
+    appid: "omarchy-window-switcher"
+    name: "show"
+    description: "Show the window picker without a held modifier"
+
+    onPressed: root.showOrCycle()
   }
 
   Connections {

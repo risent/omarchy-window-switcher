@@ -20,8 +20,38 @@ Item {
     // prefers the panel. Host Orbit here so its GlobalShortcuts are always
     // registered alongside the shortcut service.
     Orbit.Overlay {
+        id: orbitOverlay
         shell: root.shell
         manifest: root.manifest
+    }
+
+    // Touchpad gestures route here instead of the plain shortcuts so the
+    // direction dismisses whichever overlay is already up before opening
+    // its own surface.
+    GlobalShortcut {
+        appid: "omarchy-window-switcher"
+        name: "gestureUp"
+        description: "Cancel the window picker, or toggle the workspace overview"
+
+        onPressed: {
+            if (orbitOverlay.opened || orbitOverlay.snapshotPending)
+                orbitOverlay.cancel()
+            else
+                GlobalStates.overviewOpen = !GlobalStates.overviewOpen
+        }
+    }
+
+    GlobalShortcut {
+        appid: "omarchy-window-switcher"
+        name: "gestureDown"
+        description: "Cancel the workspace overview, or show the window picker"
+
+        onPressed: {
+            if (GlobalStates.overviewOpen)
+                GlobalStates.overviewOpen = false
+            else
+                orbitOverlay.showOrCycle()
+        }
     }
 
     // Never queue a callback that captures this service. The host destroys and
